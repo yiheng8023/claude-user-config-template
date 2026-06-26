@@ -1,0 +1,10 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "node __CLAUDE_HOME__/statusline.js"
+  },
+  "hooks": {},
+  "env": {
+    "EXAMPLE_ONLY": "replace-in-private-config"
+  }
+}
