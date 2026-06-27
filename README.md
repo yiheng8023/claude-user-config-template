@@ -8,6 +8,11 @@ state, or machine-local runtime details.
 
 This is a template, not a live user configuration. Use it as a safe starting
 point, then keep your real Claude configuration in your own private repository.
+It is a Claude Code-specific implementation of a more general pattern: keep an
+AI/agent working environment portable through a public-safe template plus a
+private overlay for real memory, preferences, credentials, local paths,
+installed state, backup, verification, restore, and rollback. Other agents may
+need different templates because their runtime files and setup surfaces differ.
 
 ## Start here
 
@@ -20,9 +25,10 @@ point, then keep your real Claude configuration in your own private repository.
 
 ## System context
 
-This repository is the public Claude-configuration template workstream in the
+This repository is the public Claude Code-specific configuration template workstream in the
 [`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
-ecosystem.
+ecosystem. It demonstrates the broader agent-environment portability pattern;
+it is not a claim that the pattern is limited to Claude Code.
 
 ```text
 open-resource-governance
@@ -71,6 +77,9 @@ private claude-user-config
 
 The template may be public. Your real configuration repository should remain
 private unless every file has been deliberately declassified.
+
+The general idea is portable across agents; this repository only implements the
+Claude Code-specific file and workflow shape.
 
 ## What This Repository Provides
 

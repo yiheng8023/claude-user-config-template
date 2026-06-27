@@ -6,6 +6,9 @@
 它不发布个人记忆、提示词、凭据、账号状态或本机运行时细节。
 
 这是模板，不是真实用户配置。请把它作为安全起点，然后把真实 Claude 配置保存在自己的私有仓库里。
+它是更通用模式的 Claude Code 专用实现：用公开安全模板承载可复用结构，用私有 overlay
+保存真实记忆、偏好、凭据、本机路径、安装状态、备份、验证、恢复和回滚。其它 agent 也可以
+采用同样思路，只是运行时文件和配置面不同，所以需要各自的模板。
 
 ## 从这里开始
 
@@ -20,7 +23,8 @@
 
 本仓库是
 [`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
-生态中的公开 Claude 配置模板链路。
+生态中的公开 Claude Code 专用配置模板链路。它展示的是更通用的 agent 环境可迁移模式，
+不是说这套模式只适用于 Claude Code。
 
 ```text
 open-resource-governance
@@ -66,6 +70,8 @@ private claude-user-config
 ```
 
 模板可以公开。真实配置仓除非经过逐文件脱敏和审查，否则应保持私有。
+
+通用思路可迁移到其它 agent；本仓只实现 Claude Code 专用的文件和工作流形态。
 
 ## 本仓库提供什么
 

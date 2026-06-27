@@ -75,7 +75,8 @@ def main() -> None:
         "python -B scripts/verify.py",
         "System context",
         "open-resource-governance/docs/system-topology.md",
-        "public Claude-configuration template workstream",
+        "public Claude Code-specific configuration template workstream",
+        "broader agent-environment portability pattern",
     ]:
         if phrase not in readme:
             fail(f"README.md missing phrase: {phrase}")
@@ -85,7 +86,8 @@ def main() -> None:
         "python -B scripts/verify.py",
         "系统位置",
         "open-resource-governance/docs/system-topology.md",
-        "公开 Claude 配置模板链路",
+        "公开 Claude Code 专用配置模板链路",
+        "更通用的 agent 环境可迁移模式",
     ]:
         if phrase not in zh:
             fail(f"README.zh-CN.md missing phrase: {phrase}")
