@@ -9,9 +9,18 @@ state, or machine-local runtime details.
 This is a template, not a live user configuration. Use it as a safe starting
 point, then keep your real Claude configuration in your own private repository.
 
+## Start here
+
+| If you want to... | Go here |
+| --- | --- |
+| Create your own private Claude Code config repo | Use this template as the public-safe starting point |
+| Preview setup without changing your machine | `python -B scripts/install.py --dry-run` |
+| Verify the template | `python -B scripts/verify.py` |
+| Understand the full system | [`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md) |
+
 ## System context
 
-This repository is the public Claude-configuration template lane in the
+This repository is the public Claude-configuration template workstream in the
 [`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
 ecosystem.
 
@@ -116,7 +125,7 @@ statusline.js                     Safe placeholder status line
 
 ## Relationship To The Wider System
 
-This repository is one public template lane in a modular configuration system:
+This repository is one public template workstream in a modular configuration system:
 
 - `claude-user-config` is the private Claude configuration source.
 - `codex-user-config` is the private Codex configuration source.
@@ -134,4 +143,4 @@ Never commit:
 - logs, caches, sessions, telemetry, or history;
 - private project notes or personal preferences.
 
-Use private overlays for real state. Use this repository for reusable structure.
+Use a private repository for real state. Use this repository for reusable structure.

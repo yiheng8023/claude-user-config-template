@@ -7,18 +7,27 @@
 
 这是模板，不是真实用户配置。请把它作为安全起点，然后把真实 Claude 配置保存在自己的私有仓库里。
 
+## 从这里开始
+
+| 你想做什么 | 入口 |
+| --- | --- |
+| 创建自己的私有 Claude Code 配置仓 | 把本仓作为公开安全起点 |
+| 预览安装流程但不改本机 | `python -B scripts/install.py --dry-run` |
+| 验证模板是否安全 | `python -B scripts/verify.py` |
+| 理解整套系统 | [`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md) |
+
 ## 系统位置
 
 本仓库是
 [`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
-生态中的公开 Claude 配置模板 lane。
+生态中的公开 Claude 配置模板链路。
 
 ```text
 open-resource-governance
   -> 负责整个仓库家族地图和公开/私有规则
 
 claude-user-config-template
-  -> 提供公开安全结构、占位符、dry-run setup 和验证
+  -> 提供公开安全结构、占位符、安装预览和验证
 
 私有 claude-user-config
   -> 负责真实 Claude Code 记忆、commands、hooks、本地安装策略和备份
@@ -50,7 +59,7 @@ Claude Code 配置会逐渐变成个人工作环境：
 
 ```text
 claude-user-config-template
-  -> 公开安全结构、文档、占位示例、验证和 setup 模型
+  -> 公开安全结构、文档、占位示例、验证和搭建模型
 
 private claude-user-config
   -> 真实 Claude Code 配置、记忆、hooks、commands、本地安装策略和备份
@@ -111,7 +120,7 @@ statusline.js                     安全占位状态行
 
 ## 与整体体系的关系
 
-本仓库是模块化配置体系中的公开模板 lane：
+本仓库是模块化配置体系中的公开模板链路：
 
 - `claude-user-config` 是私有 Claude 配置真源。
 - `codex-user-config` 是私有 Codex 配置真源。
@@ -129,4 +138,4 @@ statusline.js                     安全占位状态行
 - 日志、缓存、session、telemetry 或历史记录；
 - 私有项目笔记或个人偏好。
 
-真实状态留在私有 overlay。本仓只放可复用结构。
+真实状态留在私有仓。本仓只放可复用结构。

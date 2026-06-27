@@ -75,7 +75,7 @@ def main() -> None:
         "python -B scripts/verify.py",
         "System context",
         "open-resource-governance/docs/system-topology.md",
-        "public Claude-configuration template lane",
+        "public Claude-configuration template workstream",
     ]:
         if phrase not in readme:
             fail(f"README.md missing phrase: {phrase}")
@@ -85,7 +85,7 @@ def main() -> None:
         "python -B scripts/verify.py",
         "系统位置",
         "open-resource-governance/docs/system-topology.md",
-        "公开 Claude 配置模板 lane",
+        "公开 Claude 配置模板链路",
     ]:
         if phrase not in zh:
             fail(f"README.zh-CN.md missing phrase: {phrase}")
