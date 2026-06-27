@@ -9,6 +9,30 @@ state, or machine-local runtime details.
 This is a template, not a live user configuration. Use it as a safe starting
 point, then keep your real Claude configuration in your own private repository.
 
+## System context
+
+This repository is the public Claude-configuration template lane in the
+[`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
+ecosystem.
+
+```text
+open-resource-governance
+  -> maps the whole repository family and public/private rules
+
+claude-user-config-template
+  -> provides public-safe structure, placeholders, dry-run setup, and validation
+
+private claude-user-config
+  -> owns real Claude Code memory, commands, hooks, local install policy, and backups
+
+codex-user-config-template
+  -> is the sibling public template for Codex-specific configuration
+```
+
+Use this repository when you want a safe Claude Code starting point. Use the
+hub topology when you want to understand the wider system:
+[`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md).
+
 ## What problem does this solve?
 
 Claude Code configuration can grow into a real personal operating environment:

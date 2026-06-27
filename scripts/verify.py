@@ -69,10 +69,24 @@ def main() -> None:
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     zh = (ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
-    for phrase in ["Public-safe template", "private claude-user-config", "python -B scripts/verify.py"]:
+    for phrase in [
+        "Public-safe template",
+        "private claude-user-config",
+        "python -B scripts/verify.py",
+        "System context",
+        "open-resource-governance/docs/system-topology.md",
+        "public Claude-configuration template lane",
+    ]:
         if phrase not in readme:
             fail(f"README.md missing phrase: {phrase}")
-    for phrase in ["公开安全模板", "private claude-user-config", "python -B scripts/verify.py"]:
+    for phrase in [
+        "公开安全模板",
+        "private claude-user-config",
+        "python -B scripts/verify.py",
+        "系统位置",
+        "open-resource-governance/docs/system-topology.md",
+        "公开 Claude 配置模板 lane",
+    ]:
         if phrase not in zh:
             fail(f"README.zh-CN.md missing phrase: {phrase}")
 

@@ -7,6 +7,29 @@
 
 这是模板，不是真实用户配置。请把它作为安全起点，然后把真实 Claude 配置保存在自己的私有仓库里。
 
+## 系统位置
+
+本仓库是
+[`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
+生态中的公开 Claude 配置模板 lane。
+
+```text
+open-resource-governance
+  -> 负责整个仓库家族地图和公开/私有规则
+
+claude-user-config-template
+  -> 提供公开安全结构、占位符、dry-run setup 和验证
+
+私有 claude-user-config
+  -> 负责真实 Claude Code 记忆、commands、hooks、本地安装策略和备份
+
+codex-user-config-template
+  -> 是 Codex 专用配置的兄弟公开模板
+```
+
+如果你需要 Claude Code 的安全起点，从本仓开始即可。若要理解更大的系统关系，请看总仓拓扑：
+[`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md)。
+
 ## 它解决什么问题？
 
 Claude Code 配置会逐渐变成个人工作环境：
