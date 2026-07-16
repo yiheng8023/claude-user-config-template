@@ -7,9 +7,10 @@ claude-user-config-template
 private claude-user-config
   -> real Claude Code configuration, memory, commands, hooks, local policy
 
-open-resource-governance
-  -> public hub that maps the repository family
+optional sibling templates
+  -> may reuse the same pattern without becoming dependencies or authority
 ```
 
-The template never back-writes a private repository. Private improvements may
+This repository is independently buildable and verifiable. The template never
+back-writes a private repository. Private improvements may
 be promoted into the template only after filtering, review, and declassification.

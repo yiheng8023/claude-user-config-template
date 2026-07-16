@@ -17,19 +17,15 @@
 | 创建自己的私有 Claude Code 配置仓 | 把本仓作为公开安全起点 |
 | 预览安装流程但不改本机 | `python -B scripts/install.py --dry-run` |
 | 验证模板是否安全 | `python -B scripts/verify.py` |
-| 理解整套系统 | [`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md) |
+| 理解本模板边界 | [仓库职责](#仓库职责) |
 
-## 系统位置
+## 独立模板定位
 
-本仓库是
-[`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
-生态中的公开 Claude Code 专用配置模板链路。它展示的是更通用的 agent 环境可迁移模式，
+本仓库是可以独立使用的公开 Claude Code 专用配置模板。它展示更通用的 agent 环境
+可迁移模式，不依赖仓库家族总仓；
 不是说这套模式只适用于 Claude Code。
 
 ```text
-open-resource-governance
-  -> 负责整个仓库家族地图和公开/私有规则
-
 claude-user-config-template
   -> 提供公开安全结构、占位符、安装预览和验证
 
@@ -40,8 +36,7 @@ codex-user-config-template
   -> 是 Codex 专用配置的兄弟公开模板
 ```
 
-如果你需要 Claude Code 的安全起点，从本仓开始即可。若要理解更大的系统关系，请看总仓拓扑：
-[`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md)。
+本仓自身就是完整的 Claude Code 安全起点。
 
 ## 它解决什么问题？
 
@@ -124,14 +119,13 @@ scripts/verify.py                 公开安全与结构验证
 statusline.js                     安全占位状态行
 ```
 
-## 与整体体系的关系
+## 可选兄弟仓库
 
-本仓库是模块化配置体系中的公开模板链路：
+下列仓库可以采用同一公开模板／私有 overlay 模式，但都不是本模板构建或验证的依赖：
 
 - `claude-user-config` 是私有 Claude 配置真源。
 - `codex-user-config` 是私有 Codex 配置真源。
 - `codex-user-config-template` 是公开安全 Codex 模板。
-- `open-resource-governance` 负责映射仓库家族和公开/私有边界。
 
 ## 安全边界
 

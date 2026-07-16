@@ -21,19 +21,16 @@ need different templates because their runtime files and setup surfaces differ.
 | Create your own private Claude Code config repo | Use this template as the public-safe starting point |
 | Preview setup without changing your machine | `python -B scripts/install.py --dry-run` |
 | Verify the template | `python -B scripts/verify.py` |
-| Understand the full system | [`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md) |
+| Understand this template's boundary | [Repository Role](#repository-role) |
 
-## System context
+## Independent Template Context
 
-This repository is the public Claude Code-specific configuration template workstream in the
-[`open-resource-governance`](https://github.com/yiheng8023/open-resource-governance)
-ecosystem. It demonstrates the broader agent-environment portability pattern;
+This repository is an independently usable public Claude Code-specific
+configuration template. It demonstrates the broader agent-environment
+portability pattern without requiring a repository-family hub;
 it is not a claim that the pattern is limited to Claude Code.
 
 ```text
-open-resource-governance
-  -> maps the whole repository family and public/private rules
-
 claude-user-config-template
   -> provides public-safe structure, placeholders, dry-run setup, and validation
 
@@ -44,9 +41,7 @@ codex-user-config-template
   -> is the sibling public template for Codex-specific configuration
 ```
 
-Use this repository when you want a safe Claude Code starting point. Use the
-hub topology when you want to understand the wider system:
-[`open-resource-governance/docs/system-topology.md`](https://github.com/yiheng8023/open-resource-governance/blob/main/docs/system-topology.md).
+Use this repository as a self-contained safe Claude Code starting point.
 
 ## What problem does this solve?
 
@@ -132,14 +127,14 @@ scripts/verify.py                 Public-safety and structure validation
 statusline.js                     Safe placeholder status line
 ```
 
-## Relationship To The Wider System
+## Optional Sibling Repositories
 
-This repository is one public template workstream in a modular configuration system:
+These repositories may use the same public-template/private-overlay pattern,
+but none is required to build or verify this template:
 
 - `claude-user-config` is the private Claude configuration source.
 - `codex-user-config` is the private Codex configuration source.
 - `codex-user-config-template` is the public-safe Codex template.
-- `open-resource-governance` maps the repository family and public/private boundaries.
 
 ## Safety Boundary
 

@@ -73,10 +73,10 @@ def main() -> None:
         "Public-safe template",
         "private claude-user-config",
         "python -B scripts/verify.py",
-        "System context",
-        "open-resource-governance/docs/system-topology.md",
-        "public Claude Code-specific configuration template workstream",
-        "broader agent-environment portability pattern",
+        "Independent Template Context",
+        "independently usable public Claude Code-specific",
+        "without requiring a repository-family hub",
+        "broader agent-environment",
     ]:
         if phrase not in readme:
             fail(f"README.md missing phrase: {phrase}")
@@ -84,10 +84,10 @@ def main() -> None:
         "公开安全模板",
         "private claude-user-config",
         "python -B scripts/verify.py",
-        "系统位置",
-        "open-resource-governance/docs/system-topology.md",
-        "公开 Claude Code 专用配置模板链路",
-        "更通用的 agent 环境可迁移模式",
+        "独立模板定位",
+        "可以独立使用的公开 Claude Code 专用配置模板",
+        "不依赖仓库家族总仓",
+        "更通用的 agent 环境",
     ]:
         if phrase not in zh:
             fail(f"README.zh-CN.md missing phrase: {phrase}")
