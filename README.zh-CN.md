@@ -21,9 +21,8 @@
 
 ## 独立模板定位
 
-本仓库是可以独立使用的公开 Claude Code 专用配置模板。它展示更通用的 agent 环境
-可迁移模式，不依赖仓库家族总仓；
-不是说这套模式只适用于 Claude Code。
+本仓库是可以独立使用的公开 Claude Code 专用配置模板，通过本仓自有结构、验证和
+搭建说明展示更通用的 agent 环境可迁移模式；这套模式本身并不限于 Claude Code。
 
 ```text
 claude-user-config-template
@@ -121,7 +120,7 @@ statusline.js                     安全占位状态行
 
 ## 可选兄弟仓库
 
-下列仓库可以采用同一公开模板／私有 overlay 模式，但都不是本模板构建或验证的依赖：
+下列可选兄弟仓展示同一公开模板／私有 overlay 模式：
 
 - `claude-user-config` 是私有 Claude 配置真源。
 - `codex-user-config` 是私有 Codex 配置真源。

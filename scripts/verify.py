@@ -75,7 +75,7 @@ def main() -> None:
         "python -B scripts/verify.py",
         "Independent Template Context",
         "independently usable public Claude Code-specific",
-        "without requiring a repository-family hub",
+        "repository-owned structure, validation, and setup",
         "broader agent-environment",
     ]:
         if phrase not in readme:
@@ -86,7 +86,8 @@ def main() -> None:
         "python -B scripts/verify.py",
         "独立模板定位",
         "可以独立使用的公开 Claude Code 专用配置模板",
-        "不依赖仓库家族总仓",
+        "本仓自有结构",
+        "搭建说明展示更通用的 agent 环境",
         "更通用的 agent 环境",
     ]:
         if phrase not in zh:

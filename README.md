@@ -27,8 +27,8 @@ need different templates because their runtime files and setup surfaces differ.
 
 This repository is an independently usable public Claude Code-specific
 configuration template. It demonstrates the broader agent-environment
-portability pattern without requiring a repository-family hub;
-it is not a claim that the pattern is limited to Claude Code.
+portability pattern through repository-owned structure, validation, and setup
+guidance; the pattern itself is not limited to Claude Code.
 
 ```text
 claude-user-config-template
@@ -129,8 +129,8 @@ statusline.js                     Safe placeholder status line
 
 ## Optional Sibling Repositories
 
-These repositories may use the same public-template/private-overlay pattern,
-but none is required to build or verify this template:
+These optional sibling repositories illustrate the same
+public-template/private-overlay pattern:
 
 - `claude-user-config` is the private Claude configuration source.
 - `codex-user-config` is the private Codex configuration source.
