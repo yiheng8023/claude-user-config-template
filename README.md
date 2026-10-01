@@ -136,6 +136,20 @@ public-template/private-overlay pattern:
 - `codex-user-config` is the private Codex configuration source.
 - `codex-user-config-template` is the public-safe Codex template.
 
+## Optional Companion Tooling · CC Switch
+
+If you juggle multiple providers or accounts, you might pair this template's structure with a local provider/account switcher. One widely used open-source option is **CC Switch** (<https://github.com/farion1231/cc-switch>): it keeps per-provider environment values (`ANTHROPIC_BASE_URL`, credentials, model mapping) in a local database and injects the active provider into `~/.claude/settings.json` — and, for the desktop client, serves third-party inference through a local gateway. Its local MCP table can also act as the source of truth pushed into `~/.claude.json` (Claude Code) and `~/.codex/config.toml` (Codex).
+
+A common division of labour for multi-provider users:
+
+```text
+this template           -> public-safe structure, placeholder env files, validation
+CC Switch (optional)    -> live provider env injection + MCP source of truth
+your private repository -> real memory, credential references, backups
+```
+
+This template does **not** depend on CC Switch or any specific switcher — a restored configuration works standalone; treat it as an optional companion, not a requirement.
+
 ## Safety Boundary
 
 Never commit:

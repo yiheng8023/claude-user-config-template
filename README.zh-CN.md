@@ -126,6 +126,20 @@ statusline.js                     安全占位状态行
 - `codex-user-config` 是私有 Codex 配置真源。
 - `codex-user-config-template` 是公开安全 Codex 模板。
 
+## 可选配套工具 · CC Switch
+
+如果你要管理多个供应商或账号,可以把本模板的结构与一个本地供应商/账号切换器搭配使用。一个使用广泛的开源选择是 **CC Switch**(<https://github.com/farion1231/cc-switch>):它在本地数据库保存各供应商的环境值(`ANTHROPIC_BASE_URL`、凭据、模型映射),把当前供应商注入 `~/.claude/settings.json`;桌面客户端的第三方推理则经其本地网关服务。它的本地 MCP 表也可以充当推送进 `~/.claude.json`(Claude Code)与 `~/.codex/config.toml`(Codex)的单一源头。
+
+多供应商用户的常见分工:
+
+```text
+本模板                  -> 公开安全结构、占位 env 文件、验证
+CC Switch(可选)         -> 真实的供应商 env 注入 + MCP 单一源头
+你的私有仓              -> 真实记忆、凭据引用、备份
+```
+
+本模板**不依赖** CC Switch 或任何特定切换器——恢复后的配置可独立工作;把它当作可选配套,而非必需。
+
 ## 安全边界
 
 不要提交：
