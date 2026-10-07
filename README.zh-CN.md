@@ -112,6 +112,8 @@ config/claude_desktop_config.example.json
                                   桌面端配置占位示例
 docs/                             边界与搭建说明
 hooks/README.md                   Hook 策略占位
+hooks/settings-guard.js           自愈式配置守护器(SessionStart hook)
+hooks/guarded-fields.example.json 守护器的声明清单示例
 memory/README.md                  记忆边界占位
 scripts/install.py                支持 --dry-run 的最小安装器
 scripts/verify.py                 公开安全与结构验证
@@ -139,6 +141,17 @@ CC Switch(可选)         -> 真实的供应商 env 注入 + MCP 单一源头
 ```
 
 本模板**不依赖** CC Switch 或任何特定切换器——恢复后的配置可独立工作;把它当作可选配套,而非必需。
+
+## 自愈机制 · 配置守护器
+
+live 的 `~/.claude/settings.json` 可能被外部工具(供应商切换器、安装器)重写,只存在于该文件的字段会被静默冲掉。`hooks/settings-guard.js`(一个 `SessionStart` hook)会把 `guarded-fields.json` 里**显式声明**的短清单重新补回——把 `guarded-fields.example.json` 复制为 `guarded-fields.json`,声明你自己的字段,然后:
+
+```bash
+node hooks/settings-guard.js --check     # 只读:会补哪些字段
+node hooks/settings-guard.js --install   # 部署到 ~/.claude/hooks + 挂 SessionStart + 立即修复一次
+```
+
+只补不删、无缺失时空跑、出错绝不打断会话、且只依赖 Claude Code 自身的 hook 机制——无论你用哪种供应商工具(或不用),它都护着你的配置。
 
 ## 安全边界
 

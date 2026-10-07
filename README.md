@@ -121,6 +121,8 @@ config/claude_desktop_config.example.json
                                   Placeholder desktop config
 docs/                             Boundary and setup guidance
 hooks/README.md                   Hook policy placeholder
+hooks/settings-guard.js           Self-healing settings guardian (SessionStart hook)
+hooks/guarded-fields.example.json Example declaration list for the guardian
 memory/README.md                  Memory boundary placeholder
 scripts/install.py                Minimal installer with --dry-run
 scripts/verify.py                 Public-safety and structure validation
@@ -149,6 +151,17 @@ your private repository -> real memory, credential references, backups
 ```
 
 This template does **not** depend on CC Switch or any specific switcher — a restored configuration works standalone; treat it as an optional companion, not a requirement.
+
+## Self-healing · settings guardian
+
+Live `~/.claude/settings.json` can be rewritten by outside tools (provider switchers, installers), and fields that live only in that file get silently dropped on such rewrites. `hooks/settings-guard.js` (a `SessionStart` hook) re-asserts a short, explicitly declared list from `guarded-fields.json` — copy `guarded-fields.example.json`, declare your fields, then:
+
+```bash
+node hooks/settings-guard.js --check     # read-only: what would be re-asserted
+node hooks/settings-guard.js --install   # deploy to ~/.claude/hooks + wire SessionStart + fix once
+```
+
+Add-only, no-op when intact, error-tolerant, and dependent on nothing but Claude Code's hook mechanism — it protects your config no matter which provider tool you use, or none.
 
 ## Safety Boundary
 
