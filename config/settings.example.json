@@ -1,9 +1,24 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": false,
+  "cleanupPeriodDays": 90,
   "statusLine": {
     "type": "command",
     "command": "node __CLAUDE_HOME__/statusline.js"
   },
-  "hooks": {},
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node __CLAUDE_HOME__/hooks/settings-guard.js",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
   "env": {
     "EXAMPLE_ONLY": "replace-in-private-config"
   }

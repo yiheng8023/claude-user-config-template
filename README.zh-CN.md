@@ -153,6 +153,25 @@ node hooks/settings-guard.js --install   # 部署到 ~/.claude/hooks + 挂 Sessi
 
 只补不删、无缺失时空跑、出错绝不打断会话、且只依赖 Claude Code 自身的 hook 机制——无论你用哪种供应商工具(或不用),它都护着你的配置。
 
+## 调优思路(模板视角)
+
+模板刻意只保留"可复用、不绑定供应商"的部分。以下是 Claude Code 2.1.3xx 中值得在私有仓里逐项决定、但不应在公开模板里写死的调优点:
+
+| 维度 | 可选键 | 建议 |
+|---|---|---|
+| 编辑器校验 | `$schema` | 默认加上,纯 DX |
+| 署名 | `attribution: false` | 需要干净提交信息时用布尔值 |
+| 转录保留 | `cleanupPeriodDays` | 按排障/合规需要设;越大占盘越多 |
+| effort | `effortLevel` / `modelSettings` / `CLAUDE_CODE_EFFORT_LEVEL` | 先确认网关模型是否真的收到 effort;自定义模型 ID 通常需要 `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1` |
+| 子代理成本 | `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` + `CLAUDE_CODE_SUBAGENT_MODEL` | 多模型/多供应商时防止子代理静默用贵模型 |
+| 并发 | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | 按机器内存收紧 |
+| 上下文 | `[1m]` 模型后缀 / `autoCompactWindow` / `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | 先看 status line 的 `context_window.context_window_size` 是否识别;不识别再加显式窗口 |
+| Hook 成本 | `timeout`、`async` | Stop 类备份钩子设 async;所有钩子设短 timeout |
+| 状态行 | `context_window.used_percentage`、`effort.level` | 直接暴露上下文与 effort,调优先看数据 |
+| 写入边界 | `permissions.blockWritesOutsideWorkingDirectories` | 会改变工作流,确认后再开 |
+
+原则:**只加有证据、当前版本真实支持的键;每加一个都能说出为什么和怎么回退。** 模板不预置任何供应商相关的 env 或模型映射。
+
 ## 安全边界
 
 不要提交：

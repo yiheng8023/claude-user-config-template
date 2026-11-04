@@ -163,6 +163,25 @@ node hooks/settings-guard.js --install   # deploy to ~/.claude/hooks + wire Sess
 
 Add-only, no-op when intact, error-tolerant, and dependent on nothing but Claude Code's hook mechanism — it protects your config no matter which provider tool you use, or none.
 
+## Tuning guidance (template perspective)
+
+The template keeps only the reusable, provider-neutral parts. The following are worth deciding explicitly in your private repo, but should not be hard-coded in a public template:
+
+| Area | Candidate keys | Guidance |
+|---|---|---|
+| Editor support | `$schema` | Add it by default; pure DX |
+| Attribution | `attribution: false` | Boolean form for clean commit/PR messages |
+| Transcript retention | `cleanupPeriodDays` | Set per debugging/compliance needs; larger uses more disk |
+| Effort | `effortLevel` / `modelSettings` / `CLAUDE_CODE_EFFORT_LEVEL` | Verify the gateway model actually receives effort; custom model IDs usually need `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1` |
+| Subagent cost | `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` + `CLAUDE_CODE_SUBAGENT_MODEL` | Prevent subagents from silently using an expensive model in multi-model setups |
+| Concurrency | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | Tighten on memory-constrained machines |
+| Context | `[1m]` model suffix / `autoCompactWindow` / `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | Check `context_window.context_window_size` in the status line first; add an explicit window only if it isn't recognized |
+| Hook cost | `timeout`, `async` | Make Stop-style backup hooks async; give every hook a short timeout |
+| Status line | `context_window.used_percentage`, `effort.level` | Expose context and effort; tune from data |
+| Write boundary | `permissions.blockWritesOutsideWorkingDirectories` | Changes workflows; enable only after confirming |
+
+Principle: **add only keys with evidence and real support in the current version; every key must have a reason and a rollback.** The template ships no provider-specific env or model mappings.
+
 ## Safety Boundary
 
 Never commit:
