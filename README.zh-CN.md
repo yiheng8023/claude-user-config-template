@@ -108,6 +108,7 @@ CLAUDE.md                         公开安全的全局指令起点
 commands/README.md                slash command 放置说明
 config/settings.example.json      Claude Code settings 占位示例
 config/mcp-servers.example.json   MCP 环境变量引用占位示例
+config/plugins.example.json       应安装的插件集合占位示例
 config/claude_desktop_config.example.json
                                   桌面端配置占位示例
 docs/                             边界与搭建说明
@@ -116,9 +117,27 @@ hooks/settings-guard.js           自愈式配置守护器(SessionStart hook)
 hooks/guarded-fields.example.json 守护器的声明清单示例
 memory/README.md                  记忆边界占位
 scripts/install.py                支持 --dry-run 的最小安装器
+scripts/plugins.py                插件本体检查/安装器(--check/--install/--dry-run)
 scripts/verify.py                 公开安全与结构验证
 statusline.js                     安全占位状态行
 ```
+
+## 插件还原(可选)
+
+`settings.example.json` 里的 `enabledPlugins` 只是启用声明,**不会安装插件本体**。模板提供同一套最小机制:
+
+- `config/plugins.example.json`:插件集合占位(默认空)
+- `scripts/plugins.py`:`--check` / `--install` / `--dry-run`
+
+在私有仓填好 `<plugin>@<marketplace>` 列表后,新机流程:
+
+```bash
+python -B scripts/install.py
+python -B scripts/plugins.py --check
+python -B scripts/plugins.py --install
+```
+
+版本不在清单里钉死,由 marketplace 快照决定;插件集合与 `enabledPlugins` 要同步。
 
 ## 可选兄弟仓库
 

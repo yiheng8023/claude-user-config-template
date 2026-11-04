@@ -117,6 +117,7 @@ CLAUDE.md                         Public-safe starter global guidance
 commands/README.md                Slash command placement guide
 config/settings.example.json      Placeholder Claude Code settings
 config/mcp-servers.example.json   Placeholder MCP env-var references
+config/plugins.example.json       Placeholder plugin set
 config/claude_desktop_config.example.json
                                   Placeholder desktop config
 docs/                             Boundary and setup guidance
@@ -125,9 +126,27 @@ hooks/settings-guard.js           Self-healing settings guardian (SessionStart h
 hooks/guarded-fields.example.json Example declaration list for the guardian
 memory/README.md                  Memory boundary placeholder
 scripts/install.py                Minimal installer with --dry-run
+scripts/plugins.py                Plugin body check/installer (--check/--install/--dry-run)
 scripts/verify.py                 Public-safety and structure validation
 statusline.js                     Safe placeholder status line
 ```
+
+## Plugin restore (optional)
+
+`enabledPlugins` in `settings.example.json` is an enable declaration, **not an install**. The template provides the same minimal mechanism:
+
+- `config/plugins.example.json`: placeholder plugin set (empty by default)
+- `scripts/plugins.py`: `--check` / `--install` / `--dry-run`
+
+After filling in your `<plugin>@<marketplace>` list in your private repo, a fresh machine runs:
+
+```bash
+python -B scripts/install.py
+python -B scripts/plugins.py --check
+python -B scripts/plugins.py --install
+```
+
+Versions are not pinned in the manifest; the active marketplace snapshot decides. Keep the plugin set and `enabledPlugins` in sync.
 
 ## Optional Sibling Repositories
 

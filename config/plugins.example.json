@@ -1,0 +1,4 @@
+{
+  "_about": "Declare the plugin set your private repository restores. IDs are <plugin>@<marketplace>. The template ships an empty set; scripts/plugins.py --check / --install reads this file.",
+  "plugins": []
+}
