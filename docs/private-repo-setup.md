@@ -1,19 +1,22 @@
 # Private Repository Setup
 
-1. Create a private repository from this template.
-2. Clone it locally.
-3. Replace placeholder `CLAUDE.md` content with your real private rules.
-4. Add slash commands and hooks only after reviewing their side effects.
-5. Keep credentials in local environment variables or local-only files.
-6. Run `python -B scripts/verify.py` before every commit.
-
-Recommended flow:
+1. Create a private derivative of this public template.
+2. Replace placeholder global guidance and add reviewed private commands/hooks.
+3. Change `config/repository-policy.json` visibility to `private`, and change the
+   derivative CI verification flag to `--private`.
+4. Keep credentials in local environment variables or local-only config files.
+5. Run the private validator and behavior checks before committing.
 
 ```bash
-python -B scripts/verify.py
+python -B scripts/verify.py --private
+python -B -m unittest discover -s tests -p "test_*.py" -v
+node --test tests/*.test.js
 python -B scripts/install.py --dry-run
 python -B scripts/install.py
 ```
 
-Do not publish the private repository unless it has been separately
-declassified.
+Default restore adds missing fields/files and retains existing configuration.
+Use `--overwrite-files` only for reviewed file updates; it backs up existing
+files and retains unrelated commands/hooks. Settings remain missing-only.
+For a return to the public template, declassify and run `--public`; private
+validation is not evidence of public safety. Do not publish private state.

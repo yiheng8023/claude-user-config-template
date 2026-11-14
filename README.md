@@ -2,214 +2,129 @@
 
 English | [简体中文](README.zh-CN.md)
 
-Public-safe template for creating a private Claude Code user-configuration
-repository without publishing personal memory, prompts, credentials, account
-state, or machine-local runtime details.
-
-This is a template, not a live user configuration. Use it as a safe starting
-point, then keep your real Claude configuration in your own private repository.
-It is a Claude Code-specific implementation of a more general pattern: keep an
-AI/agent working environment portable through a public-safe template plus a
-private overlay for real memory, preferences, credentials, local paths,
-installed state, backup, verification, restore, and rollback. Other agents may
-need different templates because their runtime files and setup surfaces differ.
+Public-safe template for a private Claude Code user-configuration repository.
+It supplies reusable structure and validation; real memory, personal guidance,
+credentials, account state and machine paths belong in a private repository.
+This is an independently usable Claude-specific implementation of the broader
+public-template/private-overlay pattern.
 
 ## Start here
 
-| If you want to... | Go here |
-| --- | --- |
-| Create your own private Claude Code config repo | Use this template as the public-safe starting point |
-| Preview setup without changing your machine | `python -B scripts/install.py --dry-run` |
-| Verify the template | `python -B scripts/verify.py` |
-| Understand this template's boundary | [Repository Role](#repository-role) |
-
-## Independent Template Context
-
-This repository is an independently usable public Claude Code-specific
-configuration template. It demonstrates the broader agent-environment
-portability pattern through repository-owned structure, validation, and setup
-guidance; the pattern itself is not limited to Claude Code.
-
-```text
-claude-user-config-template
-  -> provides public-safe structure, placeholders, dry-run setup, and validation
-
-private claude-user-config
-  -> owns real Claude Code memory, commands, hooks, local install policy, and backups
-
-codex-user-config-template
-  -> is the sibling public template for Codex-specific configuration
-```
-
-Use this repository as a self-contained safe Claude Code starting point.
-
-## What problem does this solve?
-
-Claude Code configuration can grow into a real personal operating environment:
-
-- `CLAUDE.md` global instructions;
-- slash commands;
-- hooks;
-- status line scripts;
-- MCP configuration;
-- desktop-client configuration;
-- curated memory;
-- install and restore scripts.
-
-That environment is valuable, but it can contain private memory, local paths,
-account assumptions, credentials, or personal workflow choices. This template
-separates reusable structure from private state.
-
-## Repository Role
-
-```text
-claude-user-config-template
-  -> public-safe structure, docs, placeholder examples, validation, and setup model
-
-private claude-user-config
-  -> real Claude Code configuration, memory, hooks, commands, local install policy, backups
-```
-
-The template may be public. Your real configuration repository should remain
-private unless every file has been deliberately declassified.
-
-The general idea is portable across agents; this repository only implements the
-Claude Code-specific file and workflow shape.
-
-## What This Repository Provides
-
-- A public-safe Claude Code configuration layout.
-- Placeholder `CLAUDE.md` guidance that users can replace.
-- Example Claude Code and Claude desktop config files.
-- A minimal installer with `--dry-run`.
-- A verification script that rejects common private/secret payloads.
-- Documentation for public/private boundaries and private setup.
-
-## What This Repository Does Not Own
-
-- Real Claude memory.
-- Personal prompts, preferences, project notes, account state, or local paths.
-- OAuth state, API keys, passwords, cookies, browser/session state, logs, or caches.
-- Real MCP credentials.
-- Third-party Skill governance or resource discovery.
-
-## Quick Start
+Requires Git, Python 3.11+ and Node.js 22+.
 
 ```bash
-git clone https://github.com/yiheng8023/claude-user-config-template.git my-claude-user-config
-cd my-claude-user-config
-python -B scripts/verify.py
+python -B scripts/verify.py --public
 python -B scripts/install.py --dry-run
+python -B scripts/install.py
 ```
 
-Then:
+First create your private derivative and replace the placeholder `CLAUDE.md`.
+The installer adds missing files/settings and retains existing local files,
+provider credentials, permission lists, plugin choices and MCP entries. It skips
+credential placeholders and disabled MCP examples. Missing MCP environment
+variables defer that server until configured locally.
 
-1. Replace placeholder text in `CLAUDE.md`.
-2. Add your own public-safe slash commands under `commands/`.
-3. Keep real secrets in local environment variables or local-only config files.
-4. Keep real memory in your private repo, not in this template.
-5. Run `python -B scripts/verify.py` before committing.
+After reviewing repository file changes:
+
+```bash
+python -B scripts/install.py --overwrite-files --dry-run
+python -B scripts/install.py --overwrite-files
+```
+
+Explicit replacement backs up each differing existing file beside it using a
+unique `.bak-<timestamp>` name. Extra local commands/hooks are never deleted.
+Settings still use a missing-only merge. Backups can contain local secrets and
+remain local, excluded from Git. Restore the corresponding backup to roll back.
+Use idle configuration writers during restore: compare-before-write detects
+ordinary conflicts but does not lock external provider tools. Restart Claude
+Code after changing hooks. Linked sources/destinations, including junctions, are
+refused. `--claude-home` and `--mcp-config` select explicit destinations.
+
+Claude Desktop is a separate surface. Only an explicit
+`--desktop-config <local-json-file>` restores it, with an existing-file backup.
+The example desktop file is documentation; real desktop JSON stays local.
 
 ## Layout
 
 ```text
-CLAUDE.md                         Public-safe starter global guidance
-commands/README.md                Slash command placement guide
-config/settings.example.json      Placeholder Claude Code settings
-config/mcp-servers.example.json   Placeholder MCP env-var references
-config/plugins.example.json       Placeholder plugin set
+CLAUDE.md                         Replaceable public-safe global guidance
+commands/README.md                Command placement guidance
+config/settings.example.json      Provider-neutral settings
+config/mcp-servers.example.json   Disabled MCP placeholder
+config/plugins.example.json       Empty plugin set
+config/repository-policy.json     Public/private verification policy
 config/claude_desktop_config.example.json
-                                  Placeholder desktop config
-docs/                             Boundary and setup guidance
-hooks/README.md                   Hook policy placeholder
-hooks/settings-guard.js           Self-healing settings guardian (SessionStart hook)
-hooks/guarded-fields.example.json Example declaration list for the guardian
+hooks/settings-guard.js           Missing-env guardian (no permission grants)
+hooks/guarded-fields.example.json Empty opt-in declaration example
 memory/README.md                  Memory boundary placeholder
-scripts/install.py                Minimal installer with --dry-run
-scripts/plugins.py                Plugin body check/installer (--check/--install/--dry-run)
-scripts/verify.py                 Public-safety and structure validation
-statusline.js                     Safe placeholder status line
+docs/                             Private setup and public/private boundaries
+scripts/install.py                Additive installer; backed-up explicit replacement
+scripts/plugins.py                User-scope plugin check/restore
+scripts/verify.py                 Structure, JSON, plugin and public-safety checks
+tests/                            Installer, validator and hook regression tests
+statusline.js                     Placeholder status line
 ```
 
-## Plugin restore (optional)
+## Plugins and guardian
 
-`enabledPlugins` in `settings.example.json` is an enable declaration, **not an install**. The template provides the same minimal mechanism:
-
-- `config/plugins.example.json`: placeholder plugin set (empty by default)
-- `scripts/plugins.py`: `--check` / `--install` / `--dry-run`
-
-After filling in your `<plugin>@<marketplace>` list in your private repo, a fresh machine runs:
+Fill the plugin manifest and matching `enabledPlugins` only in your private
+configuration. Versions follow the active marketplace snapshot. Optional plugin
+IDs can be placed in `optionalPlugins` and selected with `--include-optional`.
+Existing local plugins are retained; project-scope installs do not satisfy a
+user-scope restore.
 
 ```bash
-python -B scripts/install.py
 python -B scripts/plugins.py --check
+python -B scripts/plugins.py --install --dry-run
 python -B scripts/plugins.py --install
 ```
 
-Versions are not pinned in the manifest; the active marketplace snapshot decides. Keep the plugin set and `enabledPlugins` in sync.
+The guardian is inert without a `hooks/guarded-fields.json` declaration. In a
+private derivative, copy the empty example and declare a short `env` map. It
+fills absent keys only and preserves explicit values, including `0`. Remove a
+declaration to retire it. Permissions are never restored; nonempty legacy
+`permissions_allow` is rejected. Deploy through the repository installer;
+`node hooks/settings-guard.js --install` makes no writes and directs you there.
+`--check` is read-only and returns nonzero for missing/invalid fields.
+The template wires SessionStart only; a private derivative can also choose
+ConfigChange. No memory upload or automatic Git push hook ships here.
 
-## Optional Sibling Repositories
+## Tuning decisions for private derivatives
 
-These optional sibling repositories illustrate the same
-public-template/private-overlay pattern:
+Keep decisions tied to the actual provider and workload. Prefer adjustable
+`effortLevel` to an env override that locks out per-session effort changes.
+A forced subagent model is a budget policy and overrides agent model choices;
+make any quality/cost override explicit. Higher output ceilings reduce usable
+context before compaction. Session status-line effort is configuration evidence,
+not proof of third-party provider behavior. Scope permission grants to the
+operations intended; a shell wrapper allow rule can grant much more than a
+read-only operation. Verify these tradeoffs against the
+[official environment reference](https://code.claude.com/docs/en/env-vars) and
+[permission reference](https://code.claude.com/docs/en/permissions).
 
-- `claude-user-config` is the private Claude configuration source.
-- `codex-user-config` is the private Codex configuration source.
-- `codex-user-config-template` is the public-safe Codex template.
+CC Switch is optional local provider/MCP tooling. This template does not require
+a switcher or store its database, credentials, provider mappings or local gateway.
 
-## Optional Companion Tooling · CC Switch
-
-If you juggle multiple providers or accounts, you might pair this template's structure with a local provider/account switcher. One widely used open-source option is **CC Switch** (<https://github.com/farion1231/cc-switch>): it keeps per-provider environment values (`ANTHROPIC_BASE_URL`, credentials, model mapping) in a local database and injects the active provider into `~/.claude/settings.json` — and, for the desktop client, serves third-party inference through a local gateway. Its local MCP table can also act as the source of truth pushed into `~/.claude.json` (Claude Code) and `~/.codex/config.toml` (Codex).
-
-A common division of labour for multi-provider users:
-
-```text
-this template           -> public-safe structure, placeholder env files, validation
-CC Switch (optional)    -> live provider env injection + MCP source of truth
-your private repository -> real memory, credential references, backups
-```
-
-This template does **not** depend on CC Switch or any specific switcher — a restored configuration works standalone; treat it as an optional companion, not a requirement.
-
-## Self-healing · settings guardian
-
-Live `~/.claude/settings.json` can be rewritten by outside tools (provider switchers, installers), and fields that live only in that file get silently dropped on such rewrites. `hooks/settings-guard.js` (a `SessionStart` hook) re-asserts a short, explicitly declared list from `guarded-fields.json` — copy `guarded-fields.example.json`, declare your fields, then:
+## Verification and repository boundary
 
 ```bash
-node hooks/settings-guard.js --check     # read-only: what would be re-asserted
-node hooks/settings-guard.js --install   # deploy to ~/.claude/hooks + wire SessionStart + fix once
+python -B scripts/verify.py --public
+python -B -m unittest discover -s tests -p "test_*.py" -v
+node --test tests/*.test.js
 ```
 
-Add-only, no-op when intact, error-tolerant, and dependent on nothing but Claude Code's hook mechanism — it protects your config no matter which provider tool you use, or none.
+CI runs the explicit public gate and behavioral checks on Windows, Linux and
+macOS with Python 3.11/3.14 and Node 22. The public gate parses JSON, validates
+plugin-set consistency, rejects extra memory files and concrete machine paths,
+and checks selected credential formats without printing matched payloads.
+It is not a complete confidential-information classifier.
 
-## Tuning guidance (template perspective)
+For a private derivative, intentionally change `config/repository-policy.json`
+to `private` and run `python -B scripts/verify.py --private`; replace its CI flag
+too. That permits private memory and local paths while retaining JSON, plugin
+and credential-format checks. Keep the derivative private. Public contributions
+always pass `--public`; changing a local policy file does not bypass that CI gate.
 
-The template keeps only the reusable, provider-neutral parts. The following are worth deciding explicitly in your private repo, but should not be hard-coded in a public template:
-
-| Area | Candidate keys | Guidance |
-|---|---|---|
-| Editor support | `$schema` | Add it by default; pure DX |
-| Attribution | `attribution: false` | Boolean form for clean commit/PR messages |
-| Transcript retention | `cleanupPeriodDays` | Set per debugging/compliance needs; larger uses more disk |
-| Effort | `effortLevel` / `modelSettings` / `CLAUDE_CODE_EFFORT_LEVEL` | Verify the gateway model actually receives effort; custom model IDs usually need `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1` |
-| Subagent cost | `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` + `CLAUDE_CODE_SUBAGENT_MODEL` | Prevent subagents from silently using an expensive model in multi-model setups |
-| Concurrency | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | Tighten on memory-constrained machines |
-| Context | `[1m]` model suffix / `autoCompactWindow` / `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | Check `context_window.context_window_size` in the status line first; add an explicit window only if it isn't recognized |
-| Hook cost | `timeout`, `async` | Make Stop-style backup hooks async; give every hook a short timeout |
-| Status line | `context_window.used_percentage`, `effort.level` | Expose context and effort; tune from data |
-| Write boundary | `permissions.blockWritesOutsideWorkingDirectories` | Changes workflows; enable only after confirming |
-
-Principle: **add only keys with evidence and real support in the current version; every key must have a reason and a rollback.** The template ships no provider-specific env or model mappings.
-
-## Safety Boundary
-
-Never commit:
-
-- real memory;
-- credentials, tokens, OAuth state, cookies, passwords, or private keys;
-- local machine paths;
-- account-specific MCP configuration;
-- logs, caches, sessions, telemetry, or history;
-- private project notes or personal preferences.
-
-Use a private repository for real state. Use this repository for reusable structure.
+[Public/private boundary](docs/public-private-boundary.md) ·
+[Private setup](docs/private-repo-setup.md) ·
+[Repository relationship](docs/relationship-map.md)

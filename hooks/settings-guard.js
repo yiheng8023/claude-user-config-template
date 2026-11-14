@@ -1,138 +1,79 @@
 #!/usr/bin/env node
-/*
- * Settings guardian — a Claude Code SessionStart hook. (Template copy.)
- *
- * Live ~/.claude/settings.json can be rewritten by outside tools (provider
- * switchers, installers, other agents). Fields that exist ONLY in that file
- * — owned by no tool — are silently dropped when such a rewrite happens
- * (observed 2026-10-01: a provider-switcher app update rewrite dropped an env
- * flag and one permissions entry).
- *
- * This hook re-asserts a short, explicitly declared list from
- * guarded-fields.json sitting next to this script (copy
- * guarded-fields.example.json to guarded-fields.json and declare YOUR
- * fields). Add-only: it never deletes or changes anything else, is a no-op
- * when nothing is missing, and any error exits 0 so it can never break a
- * session.
- *
- * It depends on nothing but Claude Code's own hook mechanism — it works
- * whether or not you use any provider switcher (that is the point).
- *
- * Modes:
- *   node settings-guard.js            hook mode: check + fix (prints only when it fixed something)
- *   node settings-guard.js --check    read-only report, changes nothing
- *   node settings-guard.js --install  deploy to ~/.claude/hooks, wire the SessionStart
- *                                     hook in settings.json, and run one fix pass
- *
- * Zero dependencies. Cross-platform (Windows / macOS / Linux).
- */
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+// Opt-in missing-env repair. Permission grants are never restored by a hook.
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const crypto = require('crypto');
 
-const HOMEDIR = os.homedir();
-const CLAUDE_DIR = path.join(HOMEDIR, ".claude");
-const SETTINGS = path.join(CLAUDE_DIR, "settings.json");
-const HOOKS_DIR = path.join(CLAUDE_DIR, "hooks");
-const SELF = __filename;
-const DATA = path.join(__dirname, "guarded-fields.json");
-
-const log = (m) => { try { console.log("[settings-guard] " + m); } catch (_) {} };
-
-function loadGuarded() {
+function safePath(file) {
+  for (let p = path.resolve(file); ; p = path.dirname(p)) {
+    try { if (fs.lstatSync(p).isSymbolicLink()) throw new Error('linked-path'); }
+    catch (e) { if (e.code !== 'ENOENT') throw e; }
+    if (path.dirname(p) === p) break;
+  }
+}
+function atomicWrite(file, content, before) {
+  safePath(file);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const current = () => fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
+  if (current() !== before) throw new Error('concurrent-settings-writer');
+  if (before !== null) {
+    const backup = file + '.bak-' + Date.now() + '-' + crypto.randomBytes(4).toString('hex');
+    fs.writeFileSync(backup, before, { flag: 'wx', mode: 0o600 });
+  }
+  const tmp = file + '.guard-' + process.pid + '-' + crypto.randomBytes(6).toString('hex');
   try {
-    const raw = JSON.parse(fs.readFileSync(DATA, "utf8"));
-    const env = raw && typeof raw.env === "object" && raw.env ? raw.env : {};
-    const perms = Array.isArray(raw && raw.permissions_allow) ? raw.permissions_allow : [];
-    return { env, perms };
-  } catch (_) {
-    return { env: {}, perms: [] }; // no data file -> nothing declared -> no-op
-  }
+    fs.writeFileSync(tmp, content, { flag: 'wx', mode: 0o600 });
+    if (current() !== before) throw new Error('concurrent-settings-writer');
+    safePath(file);
+    fs.renameSync(tmp, file);
+  } finally { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); }
 }
-
-function readSettings() {
-  return JSON.parse(fs.readFileSync(SETTINGS, "utf8"));
-}
-
-function atomicWrite(file, obj) {
-  const tmp = file + ".guard-tmp";
-  fs.writeFileSync(tmp, JSON.stringify(obj, null, 2) + "\n", "utf8");
-  fs.renameSync(tmp, file);
-}
-
-function checkAndFix(apply) {
-  const guarded = loadGuarded();
-  let s;
-  try { s = readSettings(); } catch (e) { log("settings.json unreadable: " + e.message); return 0; }
+function mergeGuarded(settings, declaration) {
+  if (declaration.permissions_allow?.length) throw new Error('permission-restore-is-not-supported');
+  const result = JSON.parse(JSON.stringify(settings));
   const fixed = [];
-
-  if (Object.keys(guarded.env).length) {
-    s.env = s.env || {};
-    for (const [k, v] of Object.entries(guarded.env)) {
-      if (s.env[k] !== v) { fixed.push("env." + k); if (apply) s.env[k] = v; }
+  const env = declaration.env || {};
+  if (typeof env !== 'object' || Array.isArray(env)) throw new Error('invalid-env-declaration');
+  if (result.env !== undefined && (typeof result.env !== 'object' || result.env === null || Array.isArray(result.env))) throw new Error('invalid-settings-env');
+  for (const [key, value] of Object.entries(env)) {
+    if (typeof value !== 'string') throw new Error('invalid-env-value');
+    if (!Object.hasOwn(result.env || {}, key)) {
+      result.env ||= {};
+      result.env[key] = value;
+      fixed.push(key);
     }
   }
-  for (const p of guarded.perms) {
-    s.permissions = s.permissions || {};
-    s.permissions.allow = s.permissions.allow || [];
-    if (!s.permissions.allow.includes(p)) {
-      fixed.push("permissions: " + p);
-      if (apply) s.permissions.allow.push(p);
-    }
-  }
-
-  if (!fixed.length) {
-    if (!apply) log("all declared fields present (nothing to do)");
-    return 0;
-  }
-  if (apply) {
-    atomicWrite(SETTINGS, s);
-    log("re-asserted " + fixed.length + " missing field(s): " + fixed.join("; "));
-  } else {
-    log("MISSING (dry-run, not written): " + fixed.join("; "));
-  }
-  return fixed.length;
+  return { settings: result, fixed };
 }
-
-function install() {
-  // 1) deploy self + data into ~/.claude/hooks
-  fs.mkdirSync(HOOKS_DIR, { recursive: true });
-  const destSelf = path.join(HOOKS_DIR, "settings-guard.js");
-  const destData = path.join(HOOKS_DIR, "guarded-fields.json");
-  if (path.resolve(SELF) !== path.resolve(destSelf)) {
-    fs.copyFileSync(SELF, destSelf);
-    if (fs.existsSync(DATA)) fs.copyFileSync(DATA, destData);
-    log("deployed to " + destSelf);
-  } else if (fs.existsSync(DATA) && path.resolve(DATA) !== path.resolve(destData)) {
-    fs.copyFileSync(DATA, destData);
-    log("deployed data to " + destData);
+function run(argv = process.argv.slice(2), home = path.join(os.homedir(), '.claude'), source = __dirname) {
+  const file = path.join(home, 'settings.json');
+  const dataFile = path.join(source, 'guarded-fields.json');
+  safePath(file); safePath(dataFile);
+  const before = fs.readFileSync(file, 'utf8');
+  const original = JSON.parse(before);
+  const declaration = fs.existsSync(dataFile) ? JSON.parse(fs.readFileSync(dataFile, 'utf8')) : {};
+  const checked = mergeGuarded(original, declaration);
+  if (argv.includes('--check')) {
+    console.log('[settings-guard] missing env fields: ' + checked.fixed.length);
+    return checked.fixed.length ? 1 : 0;
   }
-
-  // 2) wire the SessionStart hook (idempotent)
-  const s = readSettings();
-  s.hooks = s.hooks || {};
-  s.hooks.SessionStart = s.hooks.SessionStart || [];
-  const wired = JSON.stringify(s.hooks.SessionStart).includes("settings-guard.js");
-  if (!wired) {
-    s.hooks.SessionStart.push({
-      hooks: [{ type: "command", command: "node " + destSelf.replace(/\\/g, "/") }],
-    });
-    atomicWrite(SETTINGS, s);
-    log("SessionStart hook wired in settings.json");
-  } else {
-    log("SessionStart hook already present");
+  if (argv.includes('--install')) {
+    // Deployment is owned by the backed-up, no-delete repository installer.
+    console.error('[settings-guard] deploy with python -B scripts/install.py --overwrite-files');
+    return 2;
   }
-
-  // 3) run one fix pass now
-  checkAndFix(true);
+  if (checked.fixed.length) {
+    atomicWrite(file, JSON.stringify(checked.settings, null, 2) + '\n', before);
+    console.log('[settings-guard] restored missing env fields: ' + checked.fixed.length);
+  }
+  return 0;
 }
-
-try {
-  const argv = process.argv.slice(2);
-  if (argv.includes("--install")) install();
-  else if (argv.includes("--check")) checkAndFix(false);
-  else checkAndFix(true);
-} catch (e) {
-  try { console.log("[settings-guard] error (ignored): " + e.message); } catch (_) {}
+module.exports = { safePath, atomicWrite, mergeGuarded, run };
+if (require.main === module) {
+  try { process.exitCode = run(); }
+  catch (_) {
+    console.error('[settings-guard] repair skipped; inspect declaration and concurrent writers');
+    process.exitCode = process.argv.includes('--check') || process.argv.includes('--install') ? 2 : 0;
+  }
 }
-process.exit(0);

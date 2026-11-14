@@ -1,13 +1,13 @@
 # Contributing
 
-Contributions should improve the public-safe template, documentation, validation,
-or setup guidance.
-
-Do not contribute private memory, credentials, local paths, account-specific
-configuration, or proprietary third-party content.
-
-Before opening a pull request, run:
+Contribute reusable public-safe structure, documentation, validation and setup.
+Keep private memory, credentials, machine paths and account configuration out.
+Run the explicit public gate and regression tests before opening a pull request:
 
 ```bash
-python -B scripts/verify.py
+python -B scripts/verify.py --public
+python -B -m unittest discover -s tests -p "test_*.py" -v
+node --test tests/*.test.js
 ```
+
+The public CI gate cannot be changed by a local visibility-policy override.

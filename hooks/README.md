@@ -1,10 +1,8 @@
 # Hooks
 
-Hooks can automate local Claude Code workflows, but they can also mutate files,
-run commands, or push data.
-
-Keep this public template hook-free by default. Add hook examples only when
-they are safe, dry-run friendly, and clearly documented.
-
-Do not commit hooks that silently upload memory, push repositories, install
-software, or read secrets unless they are explicitly public-safe examples.
+The supplied settings guardian is inert without a private declaration. It only
+adds absent env keys and never restores permission grants. Copy the empty
+`guarded-fields.example.json` to `guarded-fields.json` in a private derivative,
+then deploy reviewed files through `scripts/install.py --overwrite-files`.
+Existing values and unrelated hooks remain. Keep automatic upload/push hooks and
+personal declarations in your private repository. See the root README for checks.

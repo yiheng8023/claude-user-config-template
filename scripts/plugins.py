@@ -3,6 +3,7 @@
 
   python3 scripts/plugins.py --check      report missing/disabled plugins (exit 1 on drift)
   python3 scripts/plugins.py --install    install missing plugins and enable disabled ones
+  python3 scripts/plugins.py --install --include-optional
   python3 scripts/plugins.py --install --dry-run
                                          print the commands without running them
 
@@ -11,8 +12,7 @@ restores settings.json (which lists enabledPlugins); this script restores the
 plugin bodies themselves.
 
 Requires the `claude` CLI on PATH. Versions are not pinned here: the active
-marketplace snapshot decides. Accord stays on v3.2.1 until v3.3.x ships a
-Claude plugin again.
+marketplace snapshot decides. Marketplace/ref choices belong to configuration.
 """
 from __future__ import annotations
 
@@ -27,9 +27,11 @@ MANIFEST = ROOT / "config" / "plugins.example.json"
 CLAUDE_HOME = Path.home() / ".claude"
 
 
-def load_manifest() -> list[str]:
+def load_manifest(include_optional: bool = False) -> list[str]:
     data = json.loads(MANIFEST.read_text(encoding="utf-8"))
     plugins = data.get("plugins", [])
+    if include_optional:
+        plugins = [*plugins, *data.get("optionalPlugins", [])]
     if not isinstance(plugins, list) or not all(isinstance(p, str) for p in plugins):
         raise SystemExit("plugins.example.json: 'plugins' must be a list of strings")
     return plugins
@@ -56,7 +58,7 @@ def installed_from_cli() -> dict[str, dict]:
         raise RuntimeError((proc.stderr or proc.stdout or "").strip() or "claude plugin list failed")
     data = json.loads(proc.stdout)
     entries = data if isinstance(data, list) else data.get("installed", [])
-    return {e["id"]: e for e in entries if isinstance(e, dict) and e.get("id")}
+    return {e["id"]: e for e in entries if isinstance(e, dict) and e.get("id") and e.get("scope") == "user"}
 
 
 def installed_from_files() -> dict[str, dict]:
@@ -67,6 +69,8 @@ def installed_from_files() -> dict[str, dict]:
         data = json.loads(registry.read_text(encoding="utf-8"))
         for name, records in (data.get("plugins") or {}).items():
             for rec in records:
+                if rec.get("scope") != "user":
+                    continue
                 out[name] = {"id": name, "version": rec.get("version"), "enabled": None}
     enabled = {}
     settings = CLAUDE_HOME / "settings.json"
@@ -84,14 +88,17 @@ def installed_plugins() -> dict[str, dict]:
     try:
         return installed_from_cli()
     except Exception as exc:
-        print(f"(claude plugin list unavailable: {exc}; falling back to files)")
+        print("(claude plugin list unavailable; falling back to user-scope files)")
         return installed_from_files()
 
 
 def main() -> int:
     install = "--install" in sys.argv[1:]
     dry_run = "--dry-run" in sys.argv[1:]
-    desired = load_manifest()
+    desired = load_manifest("--include-optional" in sys.argv[1:])
+    if not desired:
+        print("No plugins declared for this selection.")
+        return 0
     installed = installed_plugins()
 
     missing = [p for p in desired if p not in installed]

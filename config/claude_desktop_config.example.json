@@ -1,3 +1,4 @@
 {
+  "_comment": "Desktop configuration is separate from Claude Code. Restore a reviewed LOCAL JSON explicitly using scripts/install.py --desktop-config <local-file>. Never commit real desktop credentials.",
   "mcpServers": {}
 }

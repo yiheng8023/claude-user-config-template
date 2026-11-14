@@ -11,13 +11,13 @@ auth.json
 credentials.json
 settings.json
 .claude.json
-projects/
-sessions/
-shell-snapshots/
-session-env/
-telemetry/
-cache/
-backups/
+/projects/
+/sessions/
+/shell-snapshots/
+/session-env/
+/telemetry/
+/cache/
+/backups/
 history.jsonl
 *.log
 *.sqlite
@@ -29,3 +29,7 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local desktop credentials and deployment backups
+config/claude_desktop_config.json
+*.bak-*

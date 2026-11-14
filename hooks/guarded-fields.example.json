@@ -1,7 +1,5 @@
 {
-  "_about": "EXAMPLE. Copy to guarded-fields.json (next to the script) and declare YOUR small set of fields that must be re-asserted into ~/.claude/settings.json when they go missing — typically env flags or permission entries that live only in that file and can be dropped by outside rewrites. Keep it SHORT and explicit. Add-only: the guardian never deletes anything.",
-  "env": {
-    "EXAMPLE_FLAG": "1"
-  },
+  "_about": "Opt-in defaults restored only when env keys are absent. Existing values are preserved. Permission grants are never restored. Deploy using scripts/install.py; edit this declaration to retire a default.",
+  "env": {},
   "permissions_allow": []
 }

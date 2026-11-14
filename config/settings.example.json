@@ -4,7 +4,7 @@
   "cleanupPeriodDays": 90,
   "statusLine": {
     "type": "command",
-    "command": "node __CLAUDE_HOME__/statusline.js"
+    "command": "node \"__CLAUDE_HOME__/statusline.js\""
   },
   "hooks": {
     "SessionStart": [
@@ -12,14 +12,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node __CLAUDE_HOME__/hooks/settings-guard.js",
+            "command": "node \"__CLAUDE_HOME__/hooks/settings-guard.js\"",
             "timeout": 15
           }
         ]
       }
     ]
   },
-  "env": {
-    "EXAMPLE_ONLY": "replace-in-private-config"
-  }
+  "env": {}
 }

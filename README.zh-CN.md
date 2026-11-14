@@ -2,204 +2,99 @@
 
 [English](README.md) | 简体中文
 
-这是一个公开安全模板，用来帮助用户创建自己的私有 Claude Code 用户配置仓；
-它不发布个人记忆、提示词、凭据、账号状态或本机运行时细节。
+公开安全的 Claude Code 用户配置模板，可独立创建私有配置仓。模板承载可复用结构与验证；
+真实记忆、个人指令、凭据、账号状态和本机路径留在私仓。这是公开模板／私有 overlay 模式的 Claude 专用实现。
 
-这是模板，不是真实用户配置。请把它作为安全起点，然后把真实 Claude 配置保存在自己的私有仓库里。
-它是更通用模式的 Claude Code 专用实现：用公开安全模板承载可复用结构，用私有 overlay
-保存真实记忆、偏好、凭据、本机路径、安装状态、备份、验证、恢复和回滚。其它 agent 也可以
-采用同样思路，只是运行时文件和配置面不同，所以需要各自的模板。
+## 开始使用
 
-## 从这里开始
-
-| 你想做什么 | 入口 |
-| --- | --- |
-| 创建自己的私有 Claude Code 配置仓 | 把本仓作为公开安全起点 |
-| 预览安装流程但不改本机 | `python -B scripts/install.py --dry-run` |
-| 验证模板是否安全 | `python -B scripts/verify.py` |
-| 理解本模板边界 | [仓库职责](#仓库职责) |
-
-## 独立模板定位
-
-本仓库是可以独立使用的公开 Claude Code 专用配置模板，通过本仓自有结构、验证和
-搭建说明展示更通用的 agent 环境可迁移模式；这套模式本身并不限于 Claude Code。
-
-```text
-claude-user-config-template
-  -> 提供公开安全结构、占位符、安装预览和验证
-
-私有 claude-user-config
-  -> 负责真实 Claude Code 记忆、commands、hooks、本地安装策略和备份
-
-codex-user-config-template
-  -> 是 Codex 专用配置的兄弟公开模板
-```
-
-本仓自身就是完整的 Claude Code 安全起点。
-
-## 它解决什么问题？
-
-Claude Code 配置会逐渐变成个人工作环境：
-
-- `CLAUDE.md` 全局指令；
-- slash commands；
-- hooks；
-- status line 脚本；
-- MCP 配置；
-- Claude 桌面端配置；
-- 精选记忆；
-- 安装和恢复脚本。
-
-这些东西很有价值，但也可能包含私有记忆、本机路径、账号假设、凭据或个人工作流偏好。
-这个模板负责把可复用结构和私有状态分开。
-
-## 仓库职责
-
-```text
-claude-user-config-template
-  -> 公开安全结构、文档、占位示例、验证和搭建模型
-
-private claude-user-config
-  -> 真实 Claude Code 配置、记忆、hooks、commands、本地安装策略和备份
-```
-
-模板可以公开。真实配置仓除非经过逐文件脱敏和审查，否则应保持私有。
-
-通用思路可迁移到其它 agent；本仓只实现 Claude Code 专用的文件和工作流形态。
-
-## 本仓库提供什么
-
-- 公开安全的 Claude Code 配置目录结构。
-- 可替换的占位 `CLAUDE.md`。
-- Claude Code 与 Claude 桌面端配置示例。
-- 支持 `--dry-run` 的最小安装脚本。
-- 会拒绝常见私有/密钥载荷的验证脚本。
-- 公开/私有边界和私有仓搭建说明。
-
-## 本仓库不负责什么
-
-- 真实 Claude 记忆。
-- 个人提示词、偏好、项目笔记、账号状态或本机路径。
-- OAuth 状态、API key、密码、cookie、浏览器/session 状态、日志或缓存。
-- 真实 MCP 凭据。
-- 第三方 Skill 治理或资源发现。
-
-## 快速开始
+需要 Git、Python 3.11+、Node.js 22+。先创建自己的私有派生仓并替换 `CLAUDE.md` 占位内容。
 
 ```bash
-git clone https://github.com/yiheng8023/claude-user-config-template.git my-claude-user-config
-cd my-claude-user-config
-python -B scripts/verify.py
+python -B scripts/verify.py --public
 python -B scripts/install.py --dry-run
+python -B scripts/install.py
 ```
 
-然后：
+默认只补缺失文件/字段，保留本机文件、供应商凭据、权限清单、插件选择和已有 MCP。
+不部署凭据占位符或禁用的 MCP 示例；缺少本机环境变量的服务暂缓配置。
+审查仓库更新后，需要显式覆盖文件时：
 
-1. 替换 `CLAUDE.md` 中的占位内容。
-2. 在 `commands/` 下加入自己的公开安全 slash commands。
-3. 真实密钥放在本地环境变量或本地专用配置文件里。
-4. 真实记忆放在你的私有仓，不要放进模板仓。
-5. 提交前运行 `python -B scripts/verify.py`。
+```bash
+python -B scripts/install.py --overwrite-files --dry-run
+python -B scripts/install.py --overwrite-files
+```
+
+每个不同的原文件会生成唯一 `.bak-<时间戳>` 备份；不删除额外 commands/hooks。
+settings 仍然只补缺失，不重设本机偏好。备份可能含本机凭据，仅留在本机并被 Git 排除；
+回滚时恢复对应备份。部署时让供应商工具等其它写入者空闲：写前比较能识别普通冲突，不等于锁住外部进程。
+Hook 修改后重启 Claude Code。拒绝符号链接和 Windows junction；可用 `--claude-home` / `--mcp-config` 选择目标。
+
+Claude Desktop 为独立配置面，只有显式 `--desktop-config <本地JSON>` 才恢复，并备份原件。
+桌面配置样例仅为说明，真实 JSON 留在本机。
 
 ## 目录结构
 
 ```text
-CLAUDE.md                         公开安全的全局指令起点
-commands/README.md                slash command 放置说明
-config/settings.example.json      Claude Code settings 占位示例
-config/mcp-servers.example.json   MCP 环境变量引用占位示例
-config/plugins.example.json       应安装的插件集合占位示例
+CLAUDE.md                         可替换的公开安全指令
+commands/README.md                命令放置说明
+config/settings.example.json      不绑定供应商的设置
+config/mcp-servers.example.json   禁用的 MCP 占位示例
+config/plugins.example.json       默认空插件集合
+config/repository-policy.json     公私仓验证策略
 config/claude_desktop_config.example.json
-                                  桌面端配置占位示例
-docs/                             边界与搭建说明
-hooks/README.md                   Hook 策略占位
-hooks/settings-guard.js           自愈式配置守护器(SessionStart hook)
-hooks/guarded-fields.example.json 守护器的声明清单示例
-memory/README.md                  记忆边界占位
-scripts/install.py                支持 --dry-run 的最小安装器
-scripts/plugins.py                插件本体检查/安装器(--check/--install/--dry-run)
-scripts/verify.py                 公开安全与结构验证
-statusline.js                     安全占位状态行
+hooks/settings-guard.js           仅补缺失 env 的守护器
+hooks/guarded-fields.example.json 默认空的显式声明示例
+memory/README.md                  记忆边界说明
+docs/                             公私边界与派生仓说明
+scripts/install.py                增量安装／显式备份覆盖
+scripts/plugins.py                用户级插件检查与恢复
+scripts/verify.py                 结构、JSON、插件与公开边界校验
+tests/                            安装器、校验器与 Hook 回归测试
+statusline.js                     状态行占位
 ```
 
-## 插件还原(可选)
+## 插件与守护器
 
-`settings.example.json` 里的 `enabledPlugins` 只是启用声明,**不会安装插件本体**。模板提供同一套最小机制:
-
-- `config/plugins.example.json`:插件集合占位(默认空)
-- `scripts/plugins.py`:`--check` / `--install` / `--dry-run`
-
-在私有仓填好 `<plugin>@<marketplace>` 列表后,新机流程:
+只在私有配置中填写插件清单和对应 `enabledPlugins`。版本随 marketplace 快照；
+可选插件放入 `optionalPlugins` 并以 `--include-optional` 选取。保留本机现有插件，
+project scope 安装不算 user scope 恢复完成。
 
 ```bash
-python -B scripts/install.py
 python -B scripts/plugins.py --check
+python -B scripts/plugins.py --install --dry-run
 python -B scripts/plugins.py --install
 ```
 
-版本不在清单里钉死,由 marketplace 快照决定;插件集合与 `enabledPlugins` 要同步。
+守护器没有 `hooks/guarded-fields.json` 声明时不做修改。私仓中复制空样例并声明简短 env 清单即可启用：
+只补不存在的键，保留已有值（包括 `0`）；退休某项时移除其声明。
+不恢复任何权限，旧的非空 `permissions_allow` 会被拒绝。统一通过仓库安装器部署；
+旧的 `node hooks/settings-guard.js --install` 不写文件，只提示新入口。
+`--check` 只读，对缺失/非法字段返回非零。模板只挂 SessionStart；私仓可另外选择 ConfigChange。
+公仓不提供自动上传记忆或自动推送 Git 的 Hook。
 
-## 可选兄弟仓库
+## 私仓调优思路
 
-下列可选兄弟仓展示同一公开模板／私有 overlay 模式：
+按实际供应商和工作负载选择：使用可调的 `effortLevel`，审慎使用会覆盖临时选择的 effort env；
+强制子代理模型是预算策略，会覆盖代理自身选择，质量/成本切换应明确；提高输出上限会缩小压缩前可用上下文。
+状态行 effort 只能证明会话配置，不能证明第三方服务端行为。权限按具体操作限定，shell 包装器规则可能放行整段脚本。
+参照[官方环境变量](https://code.claude.com/docs/en/env-vars)与[权限说明](https://code.claude.com/docs/en/permissions)核对。
 
-- `claude-user-config` 是私有 Claude 配置真源。
-- `codex-user-config` 是私有 Codex 配置真源。
-- `codex-user-config-template` 是公开安全 Codex 模板。
+CC Switch 为可选的本机供应商/MCP 工具；模板不依赖它，不存其数据库、凭据、模型映射或本机网关。
 
-## 可选配套工具 · CC Switch
-
-如果你要管理多个供应商或账号,可以把本模板的结构与一个本地供应商/账号切换器搭配使用。一个使用广泛的开源选择是 **CC Switch**(<https://github.com/farion1231/cc-switch>):它在本地数据库保存各供应商的环境值(`ANTHROPIC_BASE_URL`、凭据、模型映射),把当前供应商注入 `~/.claude/settings.json`;桌面客户端的第三方推理则经其本地网关服务。它的本地 MCP 表也可以充当推送进 `~/.claude.json`(Claude Code)与 `~/.codex/config.toml`(Codex)的单一源头。
-
-多供应商用户的常见分工:
-
-```text
-本模板                  -> 公开安全结构、占位 env 文件、验证
-CC Switch(可选)         -> 真实的供应商 env 注入 + MCP 单一源头
-你的私有仓              -> 真实记忆、凭据引用、备份
-```
-
-本模板**不依赖** CC Switch 或任何特定切换器——恢复后的配置可独立工作;把它当作可选配套,而非必需。
-
-## 自愈机制 · 配置守护器
-
-live 的 `~/.claude/settings.json` 可能被外部工具(供应商切换器、安装器)重写,只存在于该文件的字段会被静默冲掉。`hooks/settings-guard.js`(一个 `SessionStart` hook)会把 `guarded-fields.json` 里**显式声明**的短清单重新补回——把 `guarded-fields.example.json` 复制为 `guarded-fields.json`,声明你自己的字段,然后:
+## 验证和公私边界
 
 ```bash
-node hooks/settings-guard.js --check     # 只读:会补哪些字段
-node hooks/settings-guard.js --install   # 部署到 ~/.claude/hooks + 挂 SessionStart + 立即修复一次
+python -B scripts/verify.py --public
+python -B -m unittest discover -s tests -p "test_*.py" -v
+node --test tests/*.test.js
 ```
 
-只补不删、无缺失时空跑、出错绝不打断会话、且只依赖 Claude Code 自身的 hook 机制——无论你用哪种供应商工具(或不用),它都护着你的配置。
+CI 显式运行公开策略及行为检查，覆盖 Windows、Linux、macOS，Python 3.11/3.14 和 Node 22。
+公开策略解析 JSON、校验插件集合、拒绝额外记忆文件和具体机器路径，扫描特定凭据格式且不打印命中载荷。
+它不等于完整的机密信息分类器。
 
-## 调优思路(模板视角)
+私有派生仓应明确把 `config/repository-policy.json` 改为 `private`，运行 `verify.py --private`，
+并修改其自己的 CI 参数；这允许私有记忆和本机路径，仍保留 JSON、插件和凭据格式校验。
+派生仓必须保持私有。对本公开模板的贡献始终通过 `--public`，修改策略文件无法绕过 CI 的显式公开检查。
 
-模板刻意只保留"可复用、不绑定供应商"的部分。以下是 Claude Code 2.1.3xx 中值得在私有仓里逐项决定、但不应在公开模板里写死的调优点:
-
-| 维度 | 可选键 | 建议 |
-|---|---|---|
-| 编辑器校验 | `$schema` | 默认加上,纯 DX |
-| 署名 | `attribution: false` | 需要干净提交信息时用布尔值 |
-| 转录保留 | `cleanupPeriodDays` | 按排障/合规需要设;越大占盘越多 |
-| effort | `effortLevel` / `modelSettings` / `CLAUDE_CODE_EFFORT_LEVEL` | 先确认网关模型是否真的收到 effort;自定义模型 ID 通常需要 `CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1` |
-| 子代理成本 | `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` + `CLAUDE_CODE_SUBAGENT_MODEL` | 多模型/多供应商时防止子代理静默用贵模型 |
-| 并发 | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` | 按机器内存收紧 |
-| 上下文 | `[1m]` 模型后缀 / `autoCompactWindow` / `CLAUDE_CODE_MAX_CONTEXT_TOKENS` | 先看 status line 的 `context_window.context_window_size` 是否识别;不识别再加显式窗口 |
-| Hook 成本 | `timeout`、`async` | Stop 类备份钩子设 async;所有钩子设短 timeout |
-| 状态行 | `context_window.used_percentage`、`effort.level` | 直接暴露上下文与 effort,调优先看数据 |
-| 写入边界 | `permissions.blockWritesOutsideWorkingDirectories` | 会改变工作流,确认后再开 |
-
-原则:**只加有证据、当前版本真实支持的键;每加一个都能说出为什么和怎么回退。** 模板不预置任何供应商相关的 env 或模型映射。
-
-## 安全边界
-
-不要提交：
-
-- 真实记忆；
-- 凭据、token、OAuth 状态、cookie、密码或私钥；
-- 本机路径；
-- 账号专用 MCP 配置；
-- 日志、缓存、session、telemetry 或历史记录；
-- 私有项目笔记或个人偏好。
-
-真实状态留在私有仓。本仓只放可复用结构。
+[公私边界](docs/public-private-boundary.md) · [私仓搭建](docs/private-repo-setup.md) · [仓库关系](docs/relationship-map.md)
