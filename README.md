@@ -40,9 +40,20 @@ ordinary conflicts but does not lock external provider tools. Restart Claude
 Code after changing hooks. Linked sources/destinations, including junctions, are
 refused. `--claude-home` and `--mcp-config` select explicit destinations.
 
-Claude Desktop is a separate surface. Only an explicit
-`--desktop-config <local-json-file>` restores it, with an existing-file backup.
-The example desktop file is documentation; real desktop JSON stays local.
+## CLI and Desktop
+
+The CLI and Desktop's local Code tab read the same Claude Code user and project
+configuration. Share instructions, permission rules, hooks, skills and user-scope
+plugins there. Define shared MCP servers once in `~/.claude.json` or `.mcp.json`.
+When Chat also needs local MCP, `claude_desktop_config.json` feeds both Chat and
+local Code. Use `--desktop-config <local-json-file>` for an explicit restore of
+that local file with a backup.
+
+Provider routing, the Desktop model picker and folder permission mode can differ.
+Compare `/status` in the same folder on both surfaces and check their plugin
+and MCP inventories. The Desktop app and its internal Code runtime have
+independent versions. For details, see
+[Claude Code desktop configuration](https://code.claude.com/docs/en/desktop#shared-configuration).
 
 ## Layout
 
@@ -67,11 +78,14 @@ statusline.js                     Placeholder status line
 
 ## Plugins and guardian
 
-Fill the plugin manifest and matching `enabledPlugins` only in your private
-configuration. Versions follow the active marketplace snapshot. Optional plugin
-IDs can be placed in `optionalPlugins` and selected with `--include-optional`.
-Existing local plugins are retained; project-scope installs do not satisfy a
-user-scope restore.
+Add the plugins you want on fresh user restores to the private manifest and
+`enabledPlugins`. Browse the full catalog in Claude. Put selected extras in
+`optionalPlugins` or install them at local scope in a specific repository.
+`--include-optional` selects the whole optional set. User-scope restore checks
+apply to the shared local Code clients. Account plugins can also sync one way
+into the CLI under supported Claude account sign-in. See
+[plugin scopes](https://code.claude.com/docs/en/discover-plugins#choose-an-install-scope)
+and [account plugin sync](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
 
 ```bash
 python -B scripts/plugins.py --check

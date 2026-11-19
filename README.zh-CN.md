@@ -29,8 +29,16 @@ settings 仍然只补缺失，不重设本机偏好。备份可能含本机凭�
 回滚时恢复对应备份。部署时让供应商工具等其它写入者空闲：写前比较能识别普通冲突，不等于锁住外部进程。
 Hook 修改后重启 Claude Code。拒绝符号链接和 Windows junction；可用 `--claude-home` / `--mcp-config` 选择目标。
 
-Claude Desktop 为独立配置面，只有显式 `--desktop-config <本地JSON>` 才恢复，并备份原件。
-桌面配置样例仅为说明，真实 JSON 留在本机。
+## CLI 与 Desktop
+
+CLI 和 Desktop 本地 Code 标签页读取同一套 Claude Code 用户及项目配置。指令、权限规则、
+Hooks、Skills、用户级插件集中维护。共享 MCP 在 `~/.claude.json` 或 `.mcp.json` 定义一次。
+Chat 需要的本机 MCP 可用 `claude_desktop_config.json`，本地 Code 也会读取其中的 MCP。
+`--desktop-config <本地JSON>` 用于显式恢复该本机文件并备份原件。
+
+供应商路由、Desktop 的模型选择和文件夹权限模式可能不同。用同一目录打开两端，
+通过 `/status` 对照配置和模型，再检查插件及 MCP。Desktop 应用和其 Code 运行时有独立版本。
+参见 [Claude Code 桌面配置文档](https://code.claude.com/docs/en/desktop#shared-configuration)。
 
 ## 目录结构
 
@@ -55,9 +63,12 @@ statusline.js                     状态行占位
 
 ## 插件与守护器
 
-只在私有配置中填写插件清单和对应 `enabledPlugins`。版本随 marketplace 快照；
-可选插件放入 `optionalPlugins` 并以 `--include-optional` 选取。保留本机现有插件，
-project scope 安装不算 user scope 恢复完成。
+私有清单和 `enabledPlugins` 只记录新机默认恢复的插件，完整目录交给 Claude 查找。
+有明确用途的候选可放入 `optionalPlugins`，或在具体项目用 local scope 按需安装。
+`--include-optional` 会选中全部可选项。用户级恢复面向本机共享的 Code 客户端。
+支持账号同步的登录下，账号插件可单向同步到 CLI。
+参见 [插件作用域](https://code.claude.com/docs/en/discover-plugins#choose-an-install-scope)与
+[账号插件同步](https://support.claude.com/en/articles/13837440-use-plugins-in-claude)。
 
 ```bash
 python -B scripts/plugins.py --check

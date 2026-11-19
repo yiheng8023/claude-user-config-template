@@ -1,4 +1,4 @@
 {
-  "_comment": "Desktop configuration is separate from Claude Code. Restore a reviewed LOCAL JSON explicitly using scripts/install.py --desktop-config <local-file>. Never commit real desktop credentials.",
+  "_comment": "Local MCP here reaches Desktop Chat and local Code sessions. Use the shared Claude Code MCP settings for tools needed in both CLI and local Code. Restore reviewed local Desktop JSON with scripts/install.py --desktop-config <local-file>.",
   "mcpServers": {}
 }
